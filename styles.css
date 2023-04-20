@@ -1,0 +1,35 @@
+body {
+    background-image: url('https://example.com/background-image-1.jpg'), url('https://example.com/background-image-2.jpg'), url('https://example.com/background-image-3.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+}
+
+.start-btn {
+    background-color: #007BFF;
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition-duration: 0.4s;
+}
+
+.start-btn:hover {
+    background-color: #0056b3;
+    color: white;
+}
