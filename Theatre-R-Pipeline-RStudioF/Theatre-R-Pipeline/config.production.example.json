@@ -1,0 +1,22 @@
+{
+  "input_dir": "//YOUR-SERVER/YOUR-TEAM-SHARE/Theatres/Input",
+  "state_dir": "C:/TheatrePipeline/State",
+  "output_dir": "//YOUR-SERVER/YOUR-TEAM-SHARE/Theatres/Published",
+  "snapshot_mode": "monthly_latest",
+  "filename_pattern": "\\.xlsx$",
+  "sheet": null,
+  "stable_seconds": 30,
+  "allow_empty_month": false,
+  "start_finish_allowance_minutes": 10,
+  "power_bi": {
+    "enabled": false,
+    "tenant_id": "",
+    "client_id": "",
+    "client_secret_env": "THEATRE_PBI_CLIENT_SECRET",
+    "workspace_id": "",
+    "semantic_model_id": "",
+    "poll_seconds": 20,
+    "timeout_seconds": 3600,
+    "max_requests_per_24h": 6
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "pipeline_version": "1.0.1",
+  "run_id": "20261030T004627Z-9bb9380dea",
+  "input_signature": "9bb9380dea540d89e125ea3914fb0df441c83854e9434760adf7b768bfa7979b",
+  "processed_utc": "2026-10-30T00:46:49Z",
+  "batch_relative_path": "batches/20261030T004627Z-9bb9380dea",
+  "selected_inputs": [
+    {
+      "month": "2026-08",
+      "file": "AUGUST-26-dummy-data.xlsx",
+      "coverage_through": null,
+      "exported_utc": null,
+      "rows": 1350,
+      "sha256": "2136966dfe32c025694b24b2b847bac1ae17d61b9a955573593319083275d7a7",
+      "bytes": 179108,
+      "Present in Input": null
+    },
+    {
+      "month": "2026-07",
+      "file": "JULY-26-dummy-data.xlsx",
+      "coverage_through": null,
+      "exported_utc": null,
+      "rows": 1350,
+      "sha256": "4443b628556c2534e9e0fae97828f0804e4d655beb8e87cdd9b509f901fccb0a",
+      "bytes": 179920,
+      "Present in Input": null
+    },
+    {
+      "month": "2026-06",
+      "file": "JUNE-26-dummy-data.xlsx",
+      "coverage_through": null,
+      "exported_utc": null,
+      "rows": 1350,
+      "sha256": "59b36cb1482e00d6f55034a729f948c987653c94a5556c5a743ee19a04206a64",
+      "bytes": 180558,
+      "Present in Input": null
+    }
+  ],
+  "row_counts": {
+    "sessions": 1014,
+    "patients": 4050,
+    "procedures": 4050,
+    "operations": 4050,
+    "data_quality_issues": 0,
+    "input_inventory": 3,
+    "monthly_summary": 747,
+    "weekly_summary": 947
+  },
+  "transform_elapsed_seconds": 69.4076218605042,
+  "source_timing_assumption": "Start/End Time provisionally represent anaesthesia/procedure commencement and theatre discharge-ready time. Clinical datetimes use naive Excel wall-clock arithmetic.",
+  "coverage_note": "Extract coverage is declared by timestamped filename. Missing coverage is unknown, not inferred from the latest patient date.",
+  "metric_note": "Run and op rates use their separate assessed planned-minute denominators. Planned session duration includes every valid represented session."
+}

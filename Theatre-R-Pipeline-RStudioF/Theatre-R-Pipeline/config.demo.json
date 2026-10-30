@@ -1,0 +1,12 @@
+{
+  "input_dir": "demo/input",
+  "state_dir": "demo/state",
+  "output_dir": "demo/output",
+  "snapshot_mode": "monthly_latest",
+  "filename_pattern": "\\.xlsx$",
+  "sheet": null,
+  "stable_seconds": 2,
+  "allow_empty_month": false,
+  "start_finish_allowance_minutes": 10,
+  "power_bi": {"enabled": false}
+}

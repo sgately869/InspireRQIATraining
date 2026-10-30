@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "workbook_reconciliation": {
+    "passed": true,
+    "session_rows": 1014,
+    "session_fields": 90,
+    "patient_rows": 4050,
+    "cell_comparisons": 127710,
+    "sessions": 1014,
+    "patients": 4050,
+    "planned_minutes": 353760,
+    "run_minutes": 319770,
+    "op_minutes": 223398
+  },
+  "fixtures": {
+    "passed": true,
+    "cases": 35,
+    "metric_assertions": 104,
+    "quality_issue_rows": 114,
+    "snapshot_scenario": "13 historical months + 2 November snapshots -> 14 selected months"
+  },
+  "integration_checks": ["CSV row counts and typed schema", "No-change run does not republish", "Concurrent-run lock", "Failed input preserves successful publication", "Unstable download is not imported", "Empty incoming folder retains archived historical months"],
+  "power_bi_mock": {
+    "passed": true,
+    "checks": ["POST then confirm completion", "Accepted request resumed without duplicate POST", "Failed refresh retained as pending", "Active refresh blocks publication"],
+    "live_calls": 0
+  },
+  "dummy_transform_seconds": 67.8454520702362,
+  "total_test_seconds": 201.756815195084,
+  "power_bi_api": "Not called: no Trust tenant credentials or gateway are configured"
+}

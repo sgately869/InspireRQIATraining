@@ -1,0 +1,1234 @@
+{
+  "sessions": [
+    {
+      "name": "Service Area",
+      "type": "text"
+    },
+    {
+      "name": "Location",
+      "type": "text"
+    },
+    {
+      "name": "Operating Theatre",
+      "type": "text"
+    },
+    {
+      "name": "Procedure Date",
+      "type": "date"
+    },
+    {
+      "name": "Slot Start Time",
+      "type": "datetime"
+    },
+    {
+      "name": "Slot End Time",
+      "type": "datetime"
+    },
+    {
+      "name": "Session ID",
+      "type": "text"
+    },
+    {
+      "name": "No of Sessions",
+      "type": "number"
+    },
+    {
+      "name": "No of Patients",
+      "type": "number"
+    },
+    {
+      "name": "Patients Excluded - Missing Times",
+      "type": "number"
+    },
+    {
+      "name": "Session Specialty",
+      "type": "text"
+    },
+    {
+      "name": "Mixed Session Specialty",
+      "type": "logical"
+    },
+    {
+      "name": "Source Files",
+      "type": "text"
+    },
+    {
+      "name": "Procedure Rows",
+      "type": "number"
+    },
+    {
+      "name": "Missing Patient IDs",
+      "type": "number"
+    },
+    {
+      "name": "Hospital",
+      "type": "text"
+    },
+    {
+      "name": "Theatre Type",
+      "type": "text"
+    },
+    {
+      "name": "Month",
+      "type": "date"
+    },
+    {
+      "name": "Financial Year",
+      "type": "text"
+    },
+    {
+      "name": "Session Duration",
+      "type": "number"
+    },
+    {
+      "name": "Trust",
+      "type": "text"
+    },
+    {
+      "name": "Run Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Op Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Run Timing Issues",
+      "type": "number"
+    },
+    {
+      "name": "Op Timing Issues",
+      "type": "number"
+    },
+    {
+      "name": "First Actual Start",
+      "type": "datetime"
+    },
+    {
+      "name": "Last Actual End",
+      "type": "datetime"
+    },
+    {
+      "name": "Timed Operations",
+      "type": "number"
+    },
+    {
+      "name": "Repeated Timing Rows",
+      "type": "number"
+    },
+    {
+      "name": "Timing Notes",
+      "type": "text"
+    },
+    {
+      "name": "Valid Op Intervals",
+      "type": "number"
+    },
+    {
+      "name": "Excluded Op Intervals",
+      "type": "number"
+    },
+    {
+      "name": "Raw Valid Op Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Same-Patient Overlap Minutes Removed",
+      "type": "number"
+    },
+    {
+      "name": "Theatre Non-Overlap Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Concurrent Patient Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Missing Patient ID Op Intervals",
+      "type": "number"
+    },
+    {
+      "name": "Conflicting Timing Operations",
+      "type": "number"
+    },
+    {
+      "name": "Reversed Timing Operations",
+      "type": "number"
+    },
+    {
+      "name": "Missing Timing Operations",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Performed Op Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Non-Overlap Op Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Overlap Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Performed Op Intervals",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Non-Overlap Op Intervals",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Overlap Op Intervals",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Op Comparison Status",
+      "type": "text"
+    },
+    {
+      "name": "Supplied Op Value Issues",
+      "type": "number"
+    },
+    {
+      "name": "Recorded Patient Op Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Used for Timing",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Excluded from Timing",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Timing",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Used for Run Time",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Run Time",
+      "type": "number"
+    },
+    {
+      "name": "Partial Run Time Sessions",
+      "type": "number"
+    },
+    {
+      "name": "Run Time Status",
+      "type": "text"
+    },
+    {
+      "name": "Sessions Used for Op Time",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Op Time",
+      "type": "number"
+    },
+    {
+      "name": "Partial Op Time Sessions",
+      "type": "number"
+    },
+    {
+      "name": "Op Time Status",
+      "type": "text"
+    },
+    {
+      "name": "Responsible Consultant",
+      "type": "text"
+    },
+    {
+      "name": "Consultant Names",
+      "type": "text"
+    },
+    {
+      "name": "Consultant Attribution",
+      "type": "text"
+    },
+    {
+      "name": "Missing Consultant Rows",
+      "type": "number"
+    },
+    {
+      "name": "Scheduled Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Scheduled Operations",
+      "type": "number"
+    },
+    {
+      "name": "Repeated Scheduled Rows",
+      "type": "number"
+    },
+    {
+      "name": "Scheduling Issues",
+      "type": "number"
+    },
+    {
+      "name": "Scheduling Notes",
+      "type": "text"
+    },
+    {
+      "name": "Sessions Used for Scheduling",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Excluded from Scheduling",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Scheduling",
+      "type": "number"
+    },
+    {
+      "name": "Below Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "At Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "Above Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "Scheduled Load Status",
+      "type": "text"
+    },
+    {
+      "name": "Start Difference Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Start Type",
+      "type": "text"
+    },
+    {
+      "name": "Starts Assessed",
+      "type": "number"
+    },
+    {
+      "name": "Partial Start Sessions",
+      "type": "number"
+    },
+    {
+      "name": "Early Starts",
+      "type": "number"
+    },
+    {
+      "name": "On-Time Starts",
+      "type": "number"
+    },
+    {
+      "name": "Late Starts",
+      "type": "number"
+    },
+    {
+      "name": "Finish Difference Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Finish Type",
+      "type": "text"
+    },
+    {
+      "name": "Finishes Assessed",
+      "type": "number"
+    },
+    {
+      "name": "Partial Finish Sessions",
+      "type": "number"
+    },
+    {
+      "name": "Early Finishes",
+      "type": "number"
+    },
+    {
+      "name": "On-Time Finishes",
+      "type": "number"
+    },
+    {
+      "name": "Late Finishes",
+      "type": "number"
+    },
+    {
+      "name": "Classification Status",
+      "type": "text"
+    },
+    {
+      "name": "Run Utilisation",
+      "type": "number"
+    },
+    {
+      "name": "Op Utilisation",
+      "type": "number"
+    },
+    {
+      "name": "Scheduled Load",
+      "type": "number"
+    }
+  ],
+  "patients": [
+    {
+      "name": "Session ID",
+      "type": "text"
+    },
+    {
+      "name": "Patient CSN",
+      "type": "text"
+    },
+    {
+      "name": "Patient Session ID",
+      "type": "text"
+    },
+    {
+      "name": "First Procedure Start",
+      "type": "datetime"
+    },
+    {
+      "name": "Last Procedure End",
+      "type": "datetime"
+    },
+    {
+      "name": "Counted Patient",
+      "type": "number"
+    },
+    {
+      "name": "Log IDs",
+      "type": "text"
+    },
+    {
+      "name": "Primary Procedures",
+      "type": "text"
+    },
+    {
+      "name": "Other Procedures",
+      "type": "text"
+    },
+    {
+      "name": "Procedure Specialty",
+      "type": "text"
+    },
+    {
+      "name": "Responsible Consultants",
+      "type": "text"
+    },
+    {
+      "name": "Procedure Rows",
+      "type": "number"
+    },
+    {
+      "name": "Source Files",
+      "type": "text"
+    },
+    {
+      "name": "Service Area",
+      "type": "text"
+    },
+    {
+      "name": "Location",
+      "type": "text"
+    },
+    {
+      "name": "Operating Theatre",
+      "type": "text"
+    },
+    {
+      "name": "Procedure Date",
+      "type": "date"
+    },
+    {
+      "name": "Slot Start Time",
+      "type": "datetime"
+    },
+    {
+      "name": "Slot End Time",
+      "type": "datetime"
+    },
+    {
+      "name": "Hospital",
+      "type": "text"
+    },
+    {
+      "name": "Theatre Type",
+      "type": "text"
+    },
+    {
+      "name": "Session Specialty",
+      "type": "text"
+    },
+    {
+      "name": "Month",
+      "type": "date"
+    },
+    {
+      "name": "Financial Year",
+      "type": "text"
+    }
+  ],
+  "procedures": [
+    {
+      "name": "Service Area",
+      "type": "text"
+    },
+    {
+      "name": "Location",
+      "type": "text"
+    },
+    {
+      "name": "Operating Theatre",
+      "type": "text"
+    },
+    {
+      "name": "Procedure Date",
+      "type": "date"
+    },
+    {
+      "name": "Patient CSN",
+      "type": "text"
+    },
+    {
+      "name": "Log ID",
+      "type": "text"
+    },
+    {
+      "name": "Primary Procedure",
+      "type": "text"
+    },
+    {
+      "name": "Other Procedures",
+      "type": "text"
+    },
+    {
+      "name": "Start Time",
+      "type": "text"
+    },
+    {
+      "name": "End Time",
+      "type": "text"
+    },
+    {
+      "name": "Operation Time Minutes (Performed)",
+      "type": "text"
+    },
+    {
+      "name": "Overlap Minutes (Performed)",
+      "type": "text"
+    },
+    {
+      "name": "Non-Overlap Operation Time Minutes (Performed)",
+      "type": "text"
+    },
+    {
+      "name": "Start Time (Scheduled)",
+      "type": "text"
+    },
+    {
+      "name": "End Time (Scheduled)",
+      "type": "text"
+    },
+    {
+      "name": "Operation Time minutes (Scheduled)",
+      "type": "text"
+    },
+    {
+      "name": "Procedure Specialty",
+      "type": "text"
+    },
+    {
+      "name": "Session",
+      "type": "text"
+    },
+    {
+      "name": "Slot Start Time",
+      "type": "datetime"
+    },
+    {
+      "name": "Slot End Time",
+      "type": "datetime"
+    },
+    {
+      "name": "Session Period",
+      "type": "text"
+    },
+    {
+      "name": "Emergency?",
+      "type": "text"
+    },
+    {
+      "name": "Funding Stream",
+      "type": "text"
+    },
+    {
+      "name": "Performed in Session",
+      "type": "text"
+    },
+    {
+      "name": "Session [Responsible Consultant]",
+      "type": "text"
+    },
+    {
+      "name": "Input Row",
+      "type": "number"
+    },
+    {
+      "name": "Source File",
+      "type": "text"
+    },
+    {
+      "name": "Include in Sessions",
+      "type": "logical"
+    },
+    {
+      "name": "Missing Patient ID",
+      "type": "logical"
+    },
+    {
+      "name": "Issue Type",
+      "type": "text"
+    },
+    {
+      "name": "Issue Detail",
+      "type": "text"
+    },
+    {
+      "name": "Hospital",
+      "type": "text"
+    },
+    {
+      "name": "Theatre Type",
+      "type": "text"
+    },
+    {
+      "name": "Month",
+      "type": "date"
+    },
+    {
+      "name": "Financial Year",
+      "type": "text"
+    },
+    {
+      "name": "Session ID",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Service Area",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Location",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Operating Theatre",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Procedure Date",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Patient CSN",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Log ID",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Primary Procedure",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Other Procedures",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Start Time",
+      "type": "text"
+    },
+    {
+      "name": "Raw: End Time",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Operation Time Minutes (Performed)",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Overlap Minutes (Performed)",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Non-Overlap Operation Time Minutes (Performed)",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Start Time (Scheduled)",
+      "type": "text"
+    },
+    {
+      "name": "Raw: End Time (Scheduled)",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Operation Time minutes (Scheduled)",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Procedure Specialty",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Session",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Slot Start Time",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Slot End Time",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Session Period",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Emergency?",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Funding Stream",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Performed in Session",
+      "type": "text"
+    },
+    {
+      "name": "Raw: Session [Responsible Consultant]",
+      "type": "text"
+    }
+  ],
+  "operations": [
+    {
+      "name": "Operation Key",
+      "type": "text"
+    },
+    {
+      "name": "Actual Start",
+      "type": "datetime"
+    },
+    {
+      "name": "Actual End",
+      "type": "datetime"
+    },
+    {
+      "name": "Timing Problem",
+      "type": "text"
+    },
+    {
+      "name": "Trusted Start",
+      "type": "datetime"
+    },
+    {
+      "name": "Trusted End",
+      "type": "datetime"
+    },
+    {
+      "name": "Patient CSN",
+      "type": "text"
+    },
+    {
+      "name": "Log ID",
+      "type": "text"
+    },
+    {
+      "name": "Patient Key",
+      "type": "text"
+    },
+    {
+      "name": "Missing Patient ID",
+      "type": "logical"
+    },
+    {
+      "name": "Valid Op Interval",
+      "type": "logical"
+    },
+    {
+      "name": "Conflict",
+      "type": "logical"
+    },
+    {
+      "name": "Reversed",
+      "type": "logical"
+    },
+    {
+      "name": "Missing",
+      "type": "logical"
+    },
+    {
+      "name": "Source Rows",
+      "type": "number"
+    },
+    {
+      "name": "Source Files",
+      "type": "text"
+    },
+    {
+      "name": "Input Rows",
+      "type": "text"
+    },
+    {
+      "name": "Supplied Value Issue",
+      "type": "logical"
+    },
+    {
+      "name": "Supplied Performed",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Non-Overlap",
+      "type": "number"
+    },
+    {
+      "name": "Supplied Overlap",
+      "type": "number"
+    },
+    {
+      "name": "Session ID",
+      "type": "text"
+    }
+  ],
+  "data_quality_issues": [
+    {
+      "name": "Session ID",
+      "type": "text"
+    },
+    {
+      "name": "Hospital",
+      "type": "text"
+    },
+    {
+      "name": "Month",
+      "type": "date"
+    },
+    {
+      "name": "Procedure Date",
+      "type": "date"
+    },
+    {
+      "name": "Operating Theatre",
+      "type": "text"
+    },
+    {
+      "name": "Session Specialty",
+      "type": "text"
+    },
+    {
+      "name": "Responsible Consultant",
+      "type": "text"
+    },
+    {
+      "name": "Slot Start Time",
+      "type": "datetime"
+    },
+    {
+      "name": "Slot End Time",
+      "type": "datetime"
+    },
+    {
+      "name": "Source Files",
+      "type": "text"
+    },
+    {
+      "name": "Source Row",
+      "type": "number"
+    },
+    {
+      "name": "Record Level",
+      "type": "text"
+    },
+    {
+      "name": "Patient CSN",
+      "type": "text"
+    },
+    {
+      "name": "Log ID",
+      "type": "text"
+    },
+    {
+      "name": "Issue Group",
+      "type": "text"
+    },
+    {
+      "name": "Issue",
+      "type": "text"
+    },
+    {
+      "name": "Reporting Treatment",
+      "type": "text"
+    },
+    {
+      "name": "Metric",
+      "type": "text"
+    },
+    {
+      "name": "Detail",
+      "type": "text"
+    },
+    {
+      "name": "Affected Records",
+      "type": "number"
+    },
+    {
+      "name": "Affected Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Issue Count",
+      "type": "number"
+    }
+  ],
+  "input_inventory": [
+    {
+      "name": "file",
+      "type": "text"
+    },
+    {
+      "name": "month",
+      "type": "text"
+    },
+    {
+      "name": "coverage_through",
+      "type": "text"
+    },
+    {
+      "name": "exported_utc",
+      "type": "text"
+    },
+    {
+      "name": "rows",
+      "type": "number"
+    },
+    {
+      "name": "sha256",
+      "type": "text"
+    },
+    {
+      "name": "bytes",
+      "type": "number"
+    },
+    {
+      "name": "Present in Input",
+      "type": "logical"
+    },
+    {
+      "name": "Selected",
+      "type": "logical"
+    }
+  ],
+  "monthly_summary": [
+    {
+      "name": "Period",
+      "type": "date"
+    },
+    {
+      "name": "Hospital",
+      "type": "text"
+    },
+    {
+      "name": "Theatre Type",
+      "type": "text"
+    },
+    {
+      "name": "Session Specialty",
+      "type": "text"
+    },
+    {
+      "name": "Responsible Consultant",
+      "type": "text"
+    },
+    {
+      "name": "Consultant Attribution",
+      "type": "text"
+    },
+    {
+      "name": "No of Sessions",
+      "type": "number"
+    },
+    {
+      "name": "No of Patients",
+      "type": "number"
+    },
+    {
+      "name": "Patients Excluded - Missing Times",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration",
+      "type": "number"
+    },
+    {
+      "name": "Run Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Op Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Run Time",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Op Time",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Used for Run Time",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Used for Op Time",
+      "type": "number"
+    },
+    {
+      "name": "Partial Run Time Sessions",
+      "type": "number"
+    },
+    {
+      "name": "Partial Op Time Sessions",
+      "type": "number"
+    },
+    {
+      "name": "Starts Assessed",
+      "type": "number"
+    },
+    {
+      "name": "Finishes Assessed",
+      "type": "number"
+    },
+    {
+      "name": "Early Starts",
+      "type": "number"
+    },
+    {
+      "name": "On-Time Starts",
+      "type": "number"
+    },
+    {
+      "name": "Late Starts",
+      "type": "number"
+    },
+    {
+      "name": "Early Finishes",
+      "type": "number"
+    },
+    {
+      "name": "On-Time Finishes",
+      "type": "number"
+    },
+    {
+      "name": "Late Finishes",
+      "type": "number"
+    },
+    {
+      "name": "Scheduled Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Used for Scheduling",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Scheduling",
+      "type": "number"
+    },
+    {
+      "name": "Below Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "At Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "Above Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "Run Utilisation",
+      "type": "number"
+    },
+    {
+      "name": "Op Utilisation",
+      "type": "number"
+    },
+    {
+      "name": "Start On-Time Rate",
+      "type": "number"
+    },
+    {
+      "name": "Finish On-Time Rate",
+      "type": "number"
+    }
+  ],
+  "weekly_summary": [
+    {
+      "name": "Period",
+      "type": "date"
+    },
+    {
+      "name": "Hospital",
+      "type": "text"
+    },
+    {
+      "name": "Theatre Type",
+      "type": "text"
+    },
+    {
+      "name": "Session Specialty",
+      "type": "text"
+    },
+    {
+      "name": "Responsible Consultant",
+      "type": "text"
+    },
+    {
+      "name": "Consultant Attribution",
+      "type": "text"
+    },
+    {
+      "name": "No of Sessions",
+      "type": "number"
+    },
+    {
+      "name": "No of Patients",
+      "type": "number"
+    },
+    {
+      "name": "Patients Excluded - Missing Times",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration",
+      "type": "number"
+    },
+    {
+      "name": "Run Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Op Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Run Time",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Op Time",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Used for Run Time",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Used for Op Time",
+      "type": "number"
+    },
+    {
+      "name": "Partial Run Time Sessions",
+      "type": "number"
+    },
+    {
+      "name": "Partial Op Time Sessions",
+      "type": "number"
+    },
+    {
+      "name": "Starts Assessed",
+      "type": "number"
+    },
+    {
+      "name": "Finishes Assessed",
+      "type": "number"
+    },
+    {
+      "name": "Early Starts",
+      "type": "number"
+    },
+    {
+      "name": "On-Time Starts",
+      "type": "number"
+    },
+    {
+      "name": "Late Starts",
+      "type": "number"
+    },
+    {
+      "name": "Early Finishes",
+      "type": "number"
+    },
+    {
+      "name": "On-Time Finishes",
+      "type": "number"
+    },
+    {
+      "name": "Late Finishes",
+      "type": "number"
+    },
+    {
+      "name": "Scheduled Minutes",
+      "type": "number"
+    },
+    {
+      "name": "Sessions Used for Scheduling",
+      "type": "number"
+    },
+    {
+      "name": "Session Duration Used for Scheduling",
+      "type": "number"
+    },
+    {
+      "name": "Below Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "At Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "Above Planned Load",
+      "type": "number"
+    },
+    {
+      "name": "Run Utilisation",
+      "type": "number"
+    },
+    {
+      "name": "Op Utilisation",
+      "type": "number"
+    },
+    {
+      "name": "Start On-Time Rate",
+      "type": "number"
+    },
+    {
+      "name": "Finish On-Time Rate",
+      "type": "number"
+    }
+  ]
+}

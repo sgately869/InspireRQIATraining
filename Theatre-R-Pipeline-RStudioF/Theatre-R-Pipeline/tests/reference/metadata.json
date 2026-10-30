@@ -1,0 +1,14 @@
+{
+  "SessionReviewTable": {
+    "rows": 1014,
+    "columns": 90
+  },
+  "DrilldownTable": {
+    "rows": 5064,
+    "columns": 28
+  },
+  "DataQualityIssuesTable": {
+    "rows": 0,
+    "columns": 21
+  }
+}

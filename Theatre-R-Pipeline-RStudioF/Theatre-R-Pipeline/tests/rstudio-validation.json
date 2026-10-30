@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "route": "source('rstudio.R'); theatre_run('config.demo.json')",
+  "sessions": 1014,
+  "source_installer": true,
+  "native_R_manifest_replacement": true,
+  "cli_source_preserves_session": true
+}
