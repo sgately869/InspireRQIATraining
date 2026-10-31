@@ -1,0 +1,89 @@
+(TableName as text) as table =>
+let
+    Files = Folder.Files(pRPublishedFolder),
+
+    FolderKey = (Path as text) as text =>
+        Text.Lower(
+            Text.TrimEnd(Text.Replace(Path, "/", "\"), {"\"}) & "\"
+        ),
+
+    Root = FolderKey(pRPublishedFolder),
+
+    ReadBinary = (Folder as text, Name as text) as binary =>
+        let
+            Matches = Table.SelectRows(
+                Files,
+                each FolderKey([Folder Path]) = Folder and [Name] = Name
+            )
+        in
+            if Table.RowCount(Matches) = 1 then
+                Binary.Buffer(Matches{0}[Content])
+            else
+                error Error.Record(
+                    "Published theatre data",
+                    "Expected exactly one file in the selected folder.",
+                    [File = Name]
+                ),
+
+    Current = Json.Document(ReadBinary(Root, "current.json")),
+
+    Parts = Text.Split(
+        Text.Replace(Current[batch_relative_path], "\", "/"),
+        "/"
+    ),
+
+    CheckedParts =
+        if List.Count(Parts) = 2
+            and Parts{0} = "batches"
+            and Parts{1} = Current[run_id]
+        then Parts
+        else error "Invalid published theatre batch path",
+
+    Batch = FolderKey(Root & Text.Combine(CheckedParts, "\")),
+
+    AllSchema = Json.Document(ReadBinary(Batch, "schema.json")),
+
+    Schema =
+        if Record.HasFields(AllSchema, TableName)
+        then Record.Field(AllSchema, TableName)
+        else error "Unknown theatre reporting table",
+
+    Data = Csv.Document(
+        ReadBinary(Batch, TableName & ".csv"),
+        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+    ),
+
+    Headers = Table.PromoteHeaders(
+        Data,
+        [PromoteAllScalars = true]
+    ),
+
+    Expected = List.Transform(Schema, each [name]),
+
+    Checked =
+        if List.Sort(Table.ColumnNames(Headers)) <> List.Sort(Expected)
+        then error "Prepared table headings do not match the published schema"
+        else Headers,
+
+    Types = List.Transform(
+        Schema,
+        each {
+            [name],
+            if [type] = "number" then type number
+            else if [type] = "logical" then type logical
+            else if [type] = "datetime" then type datetime
+            else if [type] = "date" then type date
+            else type text
+        }
+    ),
+
+    Typed = Table.TransformColumnTypes(Checked, Types, "en-GB"),
+
+    WithBatch = Table.AddColumn(
+        Typed,
+        "Reporting Batch",
+        each Current[run_id],
+        type text
+    )
+in
+    WithBatch
