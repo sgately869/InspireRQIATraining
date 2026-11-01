@@ -1,0 +1,13 @@
+{
+  "dataset": "Supplied dummy data; not Trust real data",
+  "sessions_reconciled": 1014,
+  "interval_rows": 6078,
+  "unique_interval_ids": true,
+  "planned_run_and_occupied_union_minutes_reconciled": true,
+  "preview_date": "2026-07-19",
+  "preview_sessions": 17,
+  "vega_lite_engine": "5.21",
+  "wide_narrow_overnight_missing_zero_and_concurrency_rendered": true,
+  "confirmed_concurrency_fixture_op_minutes": 135,
+  "dax_engine_check": "Not available here; DAX expressions reviewed against exported schema. Check creation and filtering in Power BI Desktop."
+}

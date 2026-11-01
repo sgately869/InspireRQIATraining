@@ -1,0 +1,100 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Session timeline: planned slot, recorded run span, and valid operation intervals overlaid as occupied theatre time. Minutes use clinical wall-clock arithmetic from Procedure Date midnight; no browser datetime conversion. Filters come from Sessions through Session ID.",
+  "data": {"name": "dataset"},
+  "width": "container",
+  "height": {"step": 46},
+  "autosize": {"type": "fit-x", "contains": "padding"},
+  "padding": {"left": 5, "right": 15, "top": 8, "bottom": 5},
+  "title": {
+    "text": "Session timeline",
+    "subtitle": [
+      "Planned session (wide grey) / Actual run (blue) / Occupied theatre time (thin green)",
+      "Recorded activity only. Missing timings are not zero use; hover for timing notes."
+    ],
+    "anchor": "start",
+    "fontSize": 17,
+    "subtitleFontSize": 11,
+    "subtitlePadding": 7
+  },
+  "transform": [
+    {"filter": "isValid(datum['Start Minute']) && isValid(datum['End Minute']) && datum['End Minute'] >= datum['Start Minute']"},
+    {"calculate": "split(datum['Session Row'], '¦')[0]", "as": "Session label"},
+    {"calculate": "datum['End Minute'] - datum['Start Minute']", "as": "Interval minutes"},
+    {"calculate": "timeFormat(datetime(2000, 0, 1, 0, 0, 0, round(datum['Start Minute'] * 60000)), '%H:%M:%S') + (floor(round(datum['Start Minute'] * 60000) / 86400000) == 0 ? '' : ' (' + format(floor(round(datum['Start Minute'] * 60000) / 86400000), '+d') + 'd)')", "as": "Starts"},
+    {"calculate": "timeFormat(datetime(2000, 0, 1, 0, 0, 0, round(datum['End Minute'] * 60000)), '%H:%M:%S') + (floor(round(datum['End Minute'] * 60000) / 86400000) == 0 ? '' : ' (' + format(floor(round(datum['End Minute'] * 60000) / 86400000), '+d') + 'd)')", "as": "Ends"}
+  ],
+  "encoding": {
+    "y": {
+      "field": "Session Row", "type": "nominal", "sort": "ascending",
+      "axis": {
+        "title": null,
+        "labelExpr": "split(datum.label, '¦')[0]",
+        "labelLimit": 360,
+        "labelFontSize": 11,
+        "labelPadding": 10,
+        "ticks": false,
+        "domain": false
+      },
+      "scale": {"paddingInner": 0.25, "paddingOuter": 0.3}
+    },
+    "x": {
+      "field": "Start Minute", "type": "quantitative",
+      "scale": {"zero": false, "nice": false},
+      "axis": {
+        "title": "Time of day (+1d = following day)",
+        "orient": "top",
+        "values": {"expr": "sequence(ceil(domain('x')[0] / 120) * 120, floor(domain('x')[1] / 120) * 120 + 1, 120)"},
+        "labelExpr": "timeFormat(datetime(2000, 0, 1, 0, 0, 0, round(datum.value * 60000)), '%H:%M') + (floor(round(datum.value * 60000) / 86400000) == 0 ? '' : ' (' + format(floor(round(datum.value * 60000) / 86400000), '+d') + 'd)')",
+        "labelFontSize": 11,
+        "labelOverlap": "greedy",
+        "titlePadding": 12,
+        "grid": true,
+        "gridColor": "#E5E7EB",
+        "domainColor": "#9CA3AF"
+      }
+    },
+    "x2": {"field": "End Minute"},
+    "color": {
+      "field": "Band", "type": "nominal",
+      "scale": {
+        "domain": ["Planned session", "Actual run", "Occupied theatre time"],
+        "range": ["#D1D5DB", "#0072B2", "#176B45"]
+      },
+      "legend": null
+    },
+    "tooltip": [
+      {"field": "Session label", "type": "nominal", "title": "Session"},
+      {"field": "Band", "type": "nominal", "title": "Interval"},
+      {"field": "Starts", "type": "nominal", "title": "Start"},
+      {"field": "Ends", "type": "nominal", "title": "End"},
+      {"field": "Interval minutes", "type": "quantitative", "format": ".2f", "title": "This interval (mins)"},
+      {"field": "Timing Notes", "type": "nominal", "title": "Session timing notes"}
+    ]
+  },
+  "layer": [
+    {
+      "transform": [{"filter": "datum.Band == 'Planned session'"}],
+      "mark": {"type": "bar", "size": 34, "opacity": 1}
+    },
+    {
+      "transform": [{"filter": "datum.Band == 'Actual run'"}],
+      "mark": {"type": "bar", "size": 20, "opacity": 1}
+    },
+    {
+      "transform": [{"filter": "datum.Band == 'Occupied theatre time'"}],
+      "mark": {"type": "bar", "size": 8, "opacity": 1}
+    },
+    {
+      "transform": [{"filter": "datum['Start Minute'] == datum['End Minute'] && datum.Band != 'Planned session'"}],
+      "mark": {"type": "tick", "orient": "vertical", "size": 10, "thickness": 1},
+      "encoding": {"x2": null}
+    }
+  ],
+  "config": {
+    "font": "Segoe UI",
+    "view": {"stroke": null},
+    "axis": {"labelColor": "#374151", "titleColor": "#374151"},
+    "title": {"color": "#163C2A", "subtitleColor": "#4B5563"}
+  }
+}

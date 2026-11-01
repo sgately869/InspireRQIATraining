@@ -1,0 +1,85 @@
+// 1. Modeling > New table. Paste this first expression only.
+Timeline Intervals =
+UNION (
+    SELECTCOLUMNS (
+        Sessions,
+        "Session ID", Sessions[Session ID],
+        "Interval ID", "Plan|" & Sessions[Session ID],
+        "Band", "Planned session",
+        "Interval Start", Sessions[Slot Start Time],
+        "Interval End", Sessions[Slot End Time]
+    ),
+    SELECTCOLUMNS (
+        FILTER (
+            Sessions,
+            NOT ISBLANK ( Sessions[Run Minutes] )
+                && NOT ISBLANK ( Sessions[First Actual Start] )
+                && NOT ISBLANK ( Sessions[Last Actual End] )
+                && Sessions[Last Actual End] >= Sessions[First Actual Start]
+        ),
+        "Session ID", Sessions[Session ID],
+        "Interval ID", "Run|" & Sessions[Session ID],
+        "Band", "Actual run",
+        "Interval Start", Sessions[First Actual Start],
+        "Interval End", Sessions[Last Actual End]
+    ),
+    SELECTCOLUMNS (
+        FILTER (
+            Operations,
+            Operations[Valid Op Interval] = TRUE ()
+                && NOT ISBLANK ( Operations[Actual Start] )
+                && NOT ISBLANK ( Operations[Actual End] )
+                && Operations[Actual End] >= Operations[Actual Start]
+        ),
+        "Session ID", Operations[Session ID],
+        "Interval ID", "Op|" & Operations[Session ID] & "|" & Operations[Operation Key],
+        "Band", "Occupied theatre time",
+        "Interval Start", Operations[Actual Start],
+        "Interval End", Operations[Actual End]
+    )
+)
+
+// 2. Create an active relationship BEFORE adding the columns below:
+// Sessions[Session ID] (1) -> Timeline Intervals[Session ID] (*).
+// Cross-filter direction: Single, from Sessions. No other new relationships.
+
+// 3. Select Timeline Intervals > New column. Add each expression separately.
+Session Row =
+    RELATED ( Sessions[Hospital] ) & " | "
+        & RELATED ( Sessions[Operating Theatre] ) & " | "
+        & FORMAT ( RELATED ( Sessions[Slot Start Time] ), "HH:mm" ) & "-"
+        & FORMAT ( RELATED ( Sessions[Slot End Time] ), "HH:mm" )
+        & "¦" & 'Timeline Intervals'[Session ID]
+
+Start Minute =
+    1440 * (
+        'Timeline Intervals'[Interval Start]
+            - RELATED ( Sessions[Procedure Date] )
+    )
+
+End Minute =
+    1440 * (
+        'Timeline Intervals'[Interval End]
+            - RELATED ( Sessions[Procedure Date] )
+    )
+
+Timing Notes =
+    COALESCE (
+        RELATED ( Sessions[Timing Notes] ),
+        "No timing issues flagged"
+    )
+
+// 4. New measure. Add to the Deneb Values well along with the six columns.
+Timeline Visible Rows =
+    IF (
+        HASONEVALUE ( Sessions[Procedure Date] ),
+        COUNTROWS ( 'Timeline Intervals' )
+    )
+
+// Deneb Values: Session Row, Interval ID, Band, Start Minute, End Minute,
+// Timing Notes, Timeline Visible Rows. (Six columns and one measure.)
+// Start Minute and End Minute: Decimal number, Don't summarize.
+// Visual-level filter: Timeline Visible Rows is greater than 0.
+// All slicers and page filters continue to use the Sessions table.
+// These extra interval rows are ONLY for drawing the timeline. Use Sessions
+// measures for session counts, planned minutes, run minutes and op minutes.
