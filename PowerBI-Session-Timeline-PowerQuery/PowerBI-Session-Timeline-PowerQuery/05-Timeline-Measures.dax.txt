@@ -1,0 +1,14 @@
+// Create as a measure, NOT a calculated column or table.
+Timeline Visible Rows PQ =
+    IF (
+        HASONEVALUE ( SessionReview[Procedure Date] ),
+        COUNTROWS ( TimelineIntervals )
+    )
+
+// Optional card/title above the timeline.
+Timeline Day Label PQ =
+    IF (
+        HASONEVALUE ( SessionReview[Procedure Date] ),
+        FORMAT ( SELECTEDVALUE ( SessionReview[Procedure Date] ), "dddd, dd MMMM yyyy" ),
+        "Select one activity date"
+    )

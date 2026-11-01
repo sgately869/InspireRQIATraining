@@ -1,0 +1,14 @@
+{
+  "source": "Original in-memory theatre timing fixtures; no Trust real data",
+  "engine": "Microsoft.Mashup.OleDb.1 (native Power Query, isolated temporary workbook)",
+  "native_fixture_checks_passed": 7,
+  "fixture_sessions": 48,
+  "drawing_intervals": 145,
+  "independent_comparisons_to_prior_native_reference": 192,
+  "plan_run_op_union_and_valid_operation_counts_match": true,
+  "interval_ids_unique": true,
+  "pain_management_fixture_union_minutes": 135,
+  "vega_lite_render_checked": "5.21; actual native-M fixture output",
+  "additional_full_dummy_folder_refresh": "Stopped before completion because of runtime; no full-folder validation pass claimed",
+  "power_bi_interactions": "Must be checked in the user PBIX; no connected Power BI Desktop session available"
+}
