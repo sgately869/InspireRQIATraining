@@ -1,0 +1,8 @@
+{
+  "native_m_operation_rows": 57,
+  "operation_ids_and_bounds_exactly_match_previous_fixture_output": true,
+  "native_m_query_succeeds_without_SessionReview_query_present": true,
+  "test_scope": "48 existing timing fixture sessions; no Trust real data",
+  "power_bi_dax_creation_and_interactions": "Not executed here; follow the steps and check in your PBIX",
+  "real_folder_refresh_time": "Not measured; no speed guarantee"
+}

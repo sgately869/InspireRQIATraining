@@ -1,0 +1,75 @@
+// A. Modeling > New table. Paste only this expression first.
+TimelineIntervals =
+UNION (
+    SELECTCOLUMNS (
+        SessionReview,
+        "Timeline Session ID", SessionReview[Timeline Session ID],
+        "Interval ID", "Plan|" & SessionReview[Timeline Session ID],
+        "Band", "Planned session",
+        "Interval Start", SessionReview[Slot Start Time],
+        "Interval End", SessionReview[Slot End Time]
+    ),
+    SELECTCOLUMNS (
+        FILTER (
+            SessionReview,
+            NOT ISBLANK ( SessionReview[Run Minutes] )
+                && NOT ISBLANK ( SessionReview[First Actual Start] )
+                && NOT ISBLANK ( SessionReview[Last Actual End] )
+                && SessionReview[Last Actual End] >= SessionReview[First Actual Start]
+        ),
+        "Timeline Session ID", SessionReview[Timeline Session ID],
+        "Interval ID", "Run|" & SessionReview[Timeline Session ID],
+        "Band", "Actual run",
+        "Interval Start", SessionReview[First Actual Start],
+        "Interval End", SessionReview[Last Actual End]
+    ),
+    SELECTCOLUMNS (
+        TimelineOperations,
+        "Timeline Session ID", TimelineOperations[Timeline Session ID],
+        "Interval ID", TimelineOperations[Interval ID],
+        "Band", "Occupied theatre time",
+        "Interval Start", TimelineOperations[Interval Start],
+        "Interval End", TimelineOperations[Interval End]
+    )
+)
+
+// B. Create the active one-to-many relationship BEFORE the columns below:
+// SessionReview[Timeline Session ID] (1) -> TimelineIntervals[Timeline Session ID] (*).
+// Single-direction filtering from SessionReview. No relationship to TimelineOperations needed.
+
+// C. Select TimelineIntervals > New column. Add each expression SEPARATELY.
+Session Row =
+    RELATED ( SessionReview[Hospital] ) & " | "
+        & RELATED ( SessionReview[Operating Theatre] ) & " | "
+        & FORMAT ( RELATED ( SessionReview[Slot Start Time] ), "HH:mm" ) & "-"
+        & FORMAT ( RELATED ( SessionReview[Slot End Time] ), "HH:mm" )
+        & "¦" & TimelineIntervals[Timeline Session ID]
+
+Start Minute =
+    1440 * (
+        TimelineIntervals[Interval Start]
+            - RELATED ( SessionReview[Procedure Date] )
+    )
+
+End Minute =
+    1440 * (
+        TimelineIntervals[Interval End]
+            - RELATED ( SessionReview[Procedure Date] )
+    )
+
+Timing Notes =
+    COALESCE (
+        RELATED ( SessionReview[Timing Notes] ),
+        "No timing issues flagged"
+    )
+
+// D. New measure, if not already present.
+Timeline Visible Rows PQ =
+    IF (
+        HASONEVALUE ( SessionReview[Procedure Date] ),
+        COUNTROWS ( TimelineIntervals )
+    )
+
+// Use the SAME Deneb specification and Values fields as the previous package.
+// Set Start Minute / End Minute to Decimal number and Don't summarize.
+// Set the visual filter Timeline Visible Rows PQ > 0.
