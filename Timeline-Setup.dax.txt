@@ -1,85 +1,81 @@
-// 1. Modeling > New table. Paste this first expression only.
-Timeline Intervals =
-UNION (
+// Model > New table. Paste this expression alone.
+TimelineIntervals =
+VAR Planned =
     SELECTCOLUMNS (
-        Sessions,
-        "Session ID", Sessions[Session ID],
-        "Interval ID", "Plan|" & Sessions[Session ID],
+        'SessionReview',
+        "Timeline Session ID", 'SessionReview'[Source Session ID],
+        "Interval ID", "Plan|" & 'SessionReview'[Source Session ID],
         "Band", "Planned session",
-        "Interval Start", Sessions[Slot Start Time],
-        "Interval End", Sessions[Slot End Time]
-    ),
-    SELECTCOLUMNS (
-        FILTER (
-            Sessions,
-            NOT ISBLANK ( Sessions[Run Minutes] )
-                && NOT ISBLANK ( Sessions[First Actual Start] )
-                && NOT ISBLANK ( Sessions[Last Actual End] )
-                && Sessions[Last Actual End] >= Sessions[First Actual Start]
-        ),
-        "Session ID", Sessions[Session ID],
-        "Interval ID", "Run|" & Sessions[Session ID],
-        "Band", "Actual run",
-        "Interval Start", Sessions[First Actual Start],
-        "Interval End", Sessions[Last Actual End]
-    ),
-    SELECTCOLUMNS (
-        FILTER (
-            Operations,
-            Operations[Valid Op Interval] = TRUE ()
-                && NOT ISBLANK ( Operations[Actual Start] )
-                && NOT ISBLANK ( Operations[Actual End] )
-                && Operations[Actual End] >= Operations[Actual Start]
-        ),
-        "Session ID", Operations[Session ID],
-        "Interval ID", "Op|" & Operations[Session ID] & "|" & Operations[Operation Key],
-        "Band", "Occupied theatre time",
-        "Interval Start", Operations[Actual Start],
-        "Interval End", Operations[Actual End]
+        "Interval Start", 'SessionReview'[Slot Start Time],
+        "Interval End", 'SessionReview'[Slot End Time]
     )
-)
+VAR RecordedRuns =
+    SELECTCOLUMNS (
+        FILTER (
+            'SessionReview',
+            NOT ISBLANK ( 'SessionReview'[Run Minutes] )
+                && NOT ISBLANK ( 'SessionReview'[First Actual Start] )
+                && NOT ISBLANK ( 'SessionReview'[Last Actual End] )
+                && 'SessionReview'[Last Actual End] >= 'SessionReview'[First Actual Start]
+        ),
+        "Timeline Session ID", 'SessionReview'[Source Session ID],
+        "Interval ID", "Run|" & 'SessionReview'[Source Session ID],
+        "Band", "Actual run",
+        "Interval Start", 'SessionReview'[First Actual Start],
+        "Interval End", 'SessionReview'[Last Actual End]
+    )
+VAR Occupied =
+    SELECTCOLUMNS (
+        FILTER ( 'TimelineChartData', 'TimelineChartData'[Record Type] = "Operation" ),
+        "Timeline Session ID", 'TimelineChartData'[Timeline Session ID],
+        "Interval ID", 'TimelineChartData'[Interval ID],
+        "Band", "Occupied theatre time",
+        "Interval Start", 'TimelineChartData'[Interval Start],
+        "Interval End", 'TimelineChartData'[Interval End]
+    )
+RETURN
+    UNION ( Planned, RecordedRuns, Occupied )
 
-// 2. Create an active relationship BEFORE adding the columns below:
-// Sessions[Session ID] (1) -> Timeline Intervals[Session ID] (*).
-// Cross-filter direction: Single, from Sessions. No other new relationships.
+// Add an active relationship before creating the next columns.
+// SessionReview[Source Session ID] (1) -> TimelineIntervals[Timeline Session ID] (*), Single.
 
-// 3. Select Timeline Intervals > New column. Add each expression separately.
+// TimelineIntervals > New column. Create each of the following three columns separately.
 Session Row =
-    RELATED ( Sessions[Hospital] ) & " | "
-        & RELATED ( Sessions[Operating Theatre] ) & " | "
-        & FORMAT ( RELATED ( Sessions[Slot Start Time] ), "HH:mm" ) & "-"
-        & FORMAT ( RELATED ( Sessions[Slot End Time] ), "HH:mm" )
-        & "¦" & 'Timeline Intervals'[Session ID]
+    RELATED ( 'SessionReview'[Hospital] ) & " | "
+        & RELATED ( 'SessionReview'[Operating Theatre] ) & " | "
+        & FORMAT ( RELATED ( 'SessionReview'[Slot Start Time] ), "HH:mm" ) & "–"
+        & FORMAT ( RELATED ( 'SessionReview'[Slot End Time] ), "HH:mm" )
+        & "¦" & 'TimelineIntervals'[Timeline Session ID]
 
 Start Minute =
     1440 * (
-        'Timeline Intervals'[Interval Start]
-            - RELATED ( Sessions[Procedure Date] )
+        'TimelineIntervals'[Interval Start]
+            - RELATED ( 'SessionReview'[Procedure Date] )
     )
 
 End Minute =
     1440 * (
-        'Timeline Intervals'[Interval End]
-            - RELATED ( Sessions[Procedure Date] )
+        'TimelineIntervals'[Interval End]
+            - RELATED ( 'SessionReview'[Procedure Date] )
     )
 
-Timing Notes =
-    COALESCE (
-        RELATED ( Sessions[Timing Notes] ),
-        "No timing issues flagged"
-    )
-
-// 4. New measure. Add to the Deneb Values well along with the six columns.
+// TimelineIntervals > New measure. Use as a visual-level filter on Deneb, greater than 0.
 Timeline Visible Rows =
     IF (
-        HASONEVALUE ( Sessions[Procedure Date] ),
-        COUNTROWS ( 'Timeline Intervals' )
+        HASONEVALUE ( 'Review Calendar'[Date] ),
+        COUNTROWS ( 'TimelineIntervals' )
     )
 
-// Deneb Values: Session Row, Interval ID, Band, Start Minute, End Minute,
-// Timing Notes, Timeline Visible Rows. (Six columns and one measure.)
-// Start Minute and End Minute: Decimal number, Don't summarize.
-// Visual-level filter: Timeline Visible Rows is greater than 0.
-// All slicers and page filters continue to use the Sessions table.
-// These extra interval rows are ONLY for drawing the timeline. Use Sessions
-// measures for session counts, planned minutes, run minutes and op minutes.
+// Review Calendar > New column. Create each of the following three columns separately.
+Timeline Month =
+    FORMAT ( 'Review Calendar'[Date], "mmm-yy", "en-GB" )
+
+Timeline Month Sort =
+    YEAR ( 'Review Calendar'[Date] ) * 100 + MONTH ( 'Review Calendar'[Date] )
+
+Timeline Procedure Date =
+    FORMAT ( 'Review Calendar'[Date], "dd/mm/yyyy", "en-GB" )
+
+// Sort Timeline Month by Timeline Month Sort.
+// Sort Timeline Procedure Date by Date.
+// Use Timeline Month, Timeline Procedure Date and SessionReview[Hospital] in the slicers.
