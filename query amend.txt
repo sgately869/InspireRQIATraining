@@ -1,0 +1,24 @@
+    RowsWithCutoffDate = Table.Buffer(
+        Table.AddColumn(
+            CombinedData,
+            "__CutoffDate",
+            each try ToDate([Procedure Date]) otherwise null,
+            type nullable date
+        )
+    ),
+    LatestProcedureDate = List.Max(
+        List.RemoveNulls(RowsWithCutoffDate[__CutoffDate]),
+        null
+    ),
+    EarlierRows =
+        if LatestProcedureDate = null then RowsWithCutoffDate
+        else Table.SelectRows(
+            RowsWithCutoffDate,
+            each [__CutoffDate] <> LatestProcedureDate
+        ),
+    OriginalRows = Table.AddColumn(
+        Table.RemoveColumns(EarlierRows, {"__CutoffDate"}),
+        "Original Row",
+        each Record.RemoveFields(_, {"Source File", "Input Row"}),
+        type record
+    ),
