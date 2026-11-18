@@ -1,0 +1,47 @@
+let
+    Scoped = Table.SelectRows(PreparedData, each
+        [Procedure Date] <> null
+        and List.Contains({"Craigavon", "Daisy Hill"}, [Hospital])
+        and [Session] <> null
+        and Comparer.OrdinalIgnoreCase([Session], "Obstetrics") = 0),
+    Source = Table.Buffer(Table.SelectColumns(Scoped, {
+        "Procedure Date", "Hospital", "Operating Theatre",
+        "Patient CSN", "Log ID", "Primary Procedure", "Other Procedures"
+    })),
+
+    MentionsCaesarean = (value as any) as logical =>
+        if value = null then false
+        else
+            let description = Text.From(value, "en-GB")
+            in Text.Contains(description, "Caesarean", Comparer.OrdinalIgnoreCase)
+                or Text.Contains(description, "Caesarian", Comparer.OrdinalIgnoreCase),
+
+    LogKeys = {"Procedure Date", "Hospital", "Log ID"},
+    Identified = Table.SelectRows(Source, each [Log ID] <> null and [Patient CSN] <> null),
+    LogPatients = Table.Group(Identified, LogKeys, {
+        {"Patient IDs", each List.Distinct([Patient CSN]), type list}
+    }),
+    Matches = Table.SelectRows(Source, each
+        MentionsCaesarean([Primary Procedure]) or MentionsCaesarean([Other Procedures])),
+    Joined = Table.NestedJoin(Matches, LogKeys, LogPatients, LogKeys, "Log Match", JoinKind.LeftOuter),
+
+    WithEncounter = Table.AddColumn(Joined, "Encounter Key", each
+        if [Patient CSN] <> null then "CSN:" & [Patient CSN]
+        else if [Log ID] = null then null
+        else if Table.IsEmpty([Log Match]) then "Log:" & [Log ID]
+        else
+            let ids = [Log Match]{0}[Patient IDs]
+            in if List.Count(ids) = 1 then "CSN:" & ids{0} else null,
+        type nullable text),
+    Resolved = Table.SelectRows(WithEncounter, each [Encounter Key] <> null),
+    Births = Table.Group(Resolved, {"Procedure Date", "Hospital", "Encounter Key"}, {
+        {"Operating Theatre", each List.Distinct([Operating Theatre]), type list}
+    }),
+    WithBirthID = Table.AddIndexColumn(Births, "Birth ID", 1, 1, Int64.Type),
+    Expanded = Table.ExpandListColumn(WithBirthID, "Operating Theatre"),
+    Result = Table.TransformColumnTypes(
+        Table.RemoveColumns(Expanded, {"Encounter Key"}),
+        {{"Procedure Date", type date}, {"Hospital", type text}, {"Operating Theatre", type text}}
+    )
+in
+    Result
