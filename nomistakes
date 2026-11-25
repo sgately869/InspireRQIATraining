@@ -1,3 +1,55 @@
+(PreparedRows as table) as table =>
+let
+    ValidRows = Table.SelectRows(PreparedRows, each [Include in Sessions] = true),
+    SessionKeys = {
+        "Service Area", "Location", "Operating Theatre",
+        "Procedure Date", "Slot Start Time", "Slot End Time"
+    },
+    Grouped = Table.Group(ValidRows, SessionKeys, {
+        {"No of Sessions", each 1, Int64.Type},
+        {"Patient Counts", each
+            let
+                Identified = Table.SelectRows(
+                    _,
+                    each [Patient CSN] <> null and Text.Trim(Text.From([Patient CSN])) <> ""
+                ),
+                Patients = Table.Group(Identified, {"Patient CSN"}, {
+                    {"Complete", each Record.Field(fxPatientTimeBounds(_), "Patient Times Complete"), type logical}
+                }),
+                Included = List.Count(List.Select(Patients[Complete], each _ = true)),
+                Excluded = Table.RowCount(Patients) - Included
+            in
+                [Included = Included, Excluded = Excluded],
+            type record},
+        {"Session Specialty", each
+            let
+                Specialties = List.Sort(List.Distinct(List.RemoveNulls([Session])))
+            in
+                if List.Count(Specialties) = 0 then "Unspecified"
+                else if List.Count(Specialties) = 1 then Specialties{0}
+                else "Mixed / multiple",
+            type text},
+        {"Mixed Session Specialty", each List.Count(List.Distinct(List.RemoveNulls([Session]))) > 1, type logical},
+        {"Source Files", each Text.Combine(List.Sort(List.Distinct([Source File])), "; "), type text},
+        {"Procedure Rows", each Table.RowCount(_), Int64.Type},
+        {"Missing Patient IDs", each List.Count(List.Select([Missing Patient ID], each _ = true)), Int64.Type},
+        {"Hospital", each List.First([Hospital]), type text},
+        {"Theatre Type", each List.First([Theatre Type]), type text},
+        {"Month", each List.First([Month]), type date},
+        {"Financial Year", each List.First([Financial Year]), type text}
+    }),
+    WithPatientCounts = Table.ExpandRecordColumn(
+        Grouped,
+        "Patient Counts",
+        {"Included", "Excluded"},
+        {"No of Patients", "Patients Excluded - Missing Times"}
+    ),
+    WithDuration = Table.AddColumn(
+        WithPatientCounts,
+        "Session Duration",
+        each Number.Round(Duration.TotalMinutes([Slot End Time] - [Slot Start Time]), 0),
+        Int64.Type
+    ),
     WithRotaCount = Table.AddColumn(
         WithDuration,
         "Rota Session Count",
@@ -18,7 +70,27 @@
                     and StartClock = #time(0, 0, 0)
                     and EndClock = #time(0, 0, 0)
             in
-                [No of Sessions] *
-                    (if IsNineToFive or IsMidnightToMidnight then 2 else 1),
+                [No of Sessions] * (if IsNineToFive or IsMidnightToMidnight then 2 else 1),
         Int64.Type
     ),
+    Ordered = Table.ReorderColumns(WithRotaCount, {
+        "Hospital", "Theatre Type", "Operating Theatre", "Session Duration",
+        "Month", "Financial Year", "Service Area", "Session Specialty",
+        "No of Sessions", "Rota Session Count", "No of Patients", "Location",
+        "Procedure Date", "Slot Start Time", "Slot End Time", "Source Files",
+        "Procedure Rows", "Missing Patient IDs", "Mixed Session Specialty"
+    }),
+    CountTypes = Table.TransformColumnTypes(Ordered, {
+        {"No of Patients", Int64.Type},
+        {"Patients Excluded - Missing Times", Int64.Type}
+    }),
+    Sorted = Table.Sort(CountTypes, {
+        {"Hospital", Order.Ascending},
+        {"Theatre Type", Order.Ascending},
+        {"Operating Theatre", Order.Ascending},
+        {"Session Duration", Order.Ascending},
+        {"Month", Order.Ascending},
+        {"Slot Start Time", Order.Ascending}
+    })
+in
+    Sorted
