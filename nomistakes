@@ -1,172 +1,42 @@
-(SourceRows as table) as table =>
+(PreparedRows as table) as table =>
 let
-    SessionKeys = {
-        "Service Area", "Location", "Operating Theatre",
-        "Procedure Date", "Slot Start Time", "Slot End Time"
-    },
-    Dimensions = {
-        "Hospital", "Theatre Type", "Session Duration", "Month",
-        "Financial Year", "Session Specialty", "Mixed Session Specialty"
-    },
-    PreparedColumns = SessionKeys & {
-        "Patient CSN", "Include in Sessions", "Log ID", "Primary Procedure",
-        "Primary Procedures", "Other Procedures", "Procedure Specialty",
-        "Session [Responsible Consultant]", "Session (Responsible Consultant)",
-        "Start Time", "End Time", "Source File", "Session", "Missing Patient ID",
-        "Hospital", "Theatre Type", "Month", "Financial Year"
-    },
-    PreparedRows = Table.Buffer(Table.SelectColumns(SourceRows, PreparedColumns, MissingField.UseNull)),
-    SessionData = Table.Buffer(fxBuildSessions(PreparedRows)),
-
-    TextValue = (Value as any) as nullable text =>
-        if Value = null then null
-        else
+    ValidRows = Table.SelectRows(PreparedRows, each [Include in Sessions] = true),
+    SessionKeys = {"Service Area", "Location", "Operating Theatre", "Procedure Date", "Slot Start Time", "Slot End Time"},
+    Grouped = Table.Group(ValidRows, SessionKeys, {
+        {"No of Sessions", each 1, Int64.Type},
+        {"Patient Counts", each
             let
-                T = Text.Trim(
-                    if Value.Is(Value, type number) then Number.ToText(Value, "0", "en-US")
-                    else Text.From(Value, "en-GB")
-                )
+                Identified = Table.SelectRows(_, each [Patient CSN] <> null and Text.Trim(Text.From([Patient CSN])) <> ""),
+                Patients = Table.Group(Identified, {"Patient CSN"}, {{"Complete", each Record.Field(fxPatientTimeBounds(_), "Patient Times Complete"), type logical}}),
+                Included = List.Count(List.Select(Patients[Complete], each _ = true)),
+                Excluded = Table.RowCount(Patients) - Included
             in
-                if T = "" then null else T,
-
-    JoinText = (Values as list) as nullable text =>
+                [Included = Included, Excluded = Excluded], type record},
+        {"Session Specialty", each let V = List.Sort(List.Distinct(List.RemoveNulls([Session]))) in if List.Count(V) = 0 then "Unspecified" else if List.Count(V) = 1 then V{0} else "Mixed / multiple", type text},
+        {"Mixed Session Specialty", each List.Count(List.Distinct(List.RemoveNulls([Session]))) > 1, type logical},
+        {"Source Files", each Text.Combine(List.Sort(List.Distinct([Source File])), "; "), type text},
+        {"Procedure Rows", each Table.RowCount(_), Int64.Type},
+        {"Missing Patient IDs", each List.Count(List.Select([Missing Patient ID], each _ = true)), Int64.Type},
+        {"Hospital", each List.First([Hospital]), type text},
+        {"Theatre Type", each List.First([Theatre Type]), type text},
+        {"Month", each List.First([Month]), type date},
+        {"Financial Year", each List.First([Financial Year]), type text}
+    }),
+    WithPatientCounts = Table.ExpandRecordColumn(Grouped, "Patient Counts", {"Included", "Excluded"}, {"No of Patients", "Patients Excluded - Missing Times"}),
+    WithDuration = Table.AddColumn(WithPatientCounts, "Session Duration", each Number.Round(Duration.TotalMinutes([Slot End Time] - [Slot Start Time]), 0), Int64.Type),
+    WithRotaCount = Table.AddColumn(WithDuration, "Rota Session Count", each
         let
-            V = List.Buffer(List.Sort(List.Distinct(List.RemoveNulls(List.Transform(Values, each TextValue(_))))))
+            StartDate = Date.From([Slot Start Time]),
+            EndDate = Date.From([Slot End Time]),
+            StartClock = Time.From([Slot Start Time]),
+            EndClock = Time.From([Slot End Time]),
+            IsNineToFive = EndDate = StartDate and StartClock = #time(9, 0, 0) and EndClock = #time(17, 0, 0),
+            IsMidnightToMidnight = EndDate = Date.AddDays(StartDate, 1) and StartClock = #time(0, 0, 0) and EndClock = #time(0, 0, 0)
         in
-            if List.Count(V) = 0 then null else Text.Combine(V, "; "),
-
-    OptionalField = (Row as record, Names as list) as any =>
-        List.First(List.RemoveNulls(List.Transform(Names, each Record.FieldOrDefault(Row, _, null))), null),
-
-    PatientDetails = (Rows as table) as record =>
-        let
-            Records = List.Buffer(Table.ToRecords(Rows)),
-            Bounds = fxPatientTimeBounds(Rows)
-        in [
-            #"Log IDs" = JoinText(List.Transform(Records, each Record.FieldOrDefault(_, "Log ID", null))),
-            #"Primary Procedures" = JoinText(List.Transform(Records, each OptionalField(_, {"Primary Procedure", "Primary Procedures"}))),
-            #"Other Procedures" = JoinText(List.Transform(Records, each Record.FieldOrDefault(_, "Other Procedures", null))),
-            #"Procedure Specialty" = JoinText(List.Transform(Records, each Record.FieldOrDefault(_, "Procedure Specialty", null))),
-            #"Responsible Consultants" = JoinText(List.Transform(Records, each OptionalField(_, {"Session [Responsible Consultant]", "Session (Responsible Consultant)"}))),
-            #"First Procedure Start" = Record.Field(Bounds, "First Procedure Start"),
-            #"Last Procedure End" = Record.Field(Bounds, "Last Procedure End"),
-            #"Procedure Rows" = List.Count(Records),
-            #"Source Files" = JoinText(List.Transform(Records, each Record.FieldOrDefault(_, "Source File", null)))
-        ],
-
-    UniqueSessionCount = Table.RowCount(Table.Distinct(Table.SelectColumns(SessionData, SessionKeys))),
-    CheckedSessions =
-        if UniqueSessionCount <> Table.RowCount(SessionData)
-        then error "Sessions contains duplicate session keys. DrilldownData cannot reconcile the report."
-        else SessionData,
-
-    PatientSource = Table.SelectRows(
-        PreparedRows,
-        each [Include in Sessions] = true
-            and [Patient CSN] <> null
-            and Text.Trim(Text.From([Patient CSN])) <> ""
-    ),
-    PatientGroups = Table.Group(
-        PatientSource,
-        SessionKeys & {"Patient CSN"},
-        {{"Patient Details", each PatientDetails(_), type record}}
-    ),
-    DetailFields = {
-        "Log IDs", "Primary Procedures", "Other Procedures", "Procedure Specialty",
-        "Responsible Consultants", "First Procedure Start", "Last Procedure End",
-        "Procedure Rows", "Source Files"
-    },
-    AllPatientDetails = Table.Buffer(Table.ExpandRecordColumn(PatientGroups, "Patient Details", DetailFields, DetailFields)),
-    PatientExpanded = Table.Buffer(Table.SelectRows(
-        AllPatientDetails,
-        each [First Procedure Start] <> null and [Last Procedure End] <> null
-    )),
-    SessionDimensions = Table.SelectColumns(CheckedSessions, SessionKeys & Dimensions),
-    PatientJoin = Table.NestedJoin(PatientExpanded, SessionKeys, SessionDimensions, SessionKeys, "Matching Session", JoinKind.Inner),
-    PatientsWithDimensions = Table.Buffer(Table.ExpandTableColumn(PatientJoin, "Matching Session", Dimensions, Dimensions)),
-    ReconciledPatients =
-        if Table.RowCount(PatientsWithDimensions) <> Table.RowCount(PatientExpanded)
-            or Table.RowCount(PatientsWithDimensions) <> List.Sum({0} & CheckedSessions[No of Patients])
-        then error "Patient encounters do not match the session counts. DrilldownData refresh stopped."
-        else PatientsWithDimensions,
-
-    PatientRecordType = Table.AddColumn(ReconciledPatients, "Record Type", each "No. of patients", type text),
-    PatientCount = Table.AddColumn(PatientRecordType, "Count", each 1, Int64.Type),
-    PatientSessionCount = Table.AddColumn(PatientCount, "Patients in Session", each null, type nullable number),
-    PatientMissingIDs = Table.AddColumn(PatientSessionCount, "Missing Patient IDs", each null, type nullable number),
-    PatientRows = Table.AddColumn(PatientMissingIDs, "Patients Excluded - Missing Times", each null, type nullable number),
-
-    SessionBase = Table.SelectColumns(
-        CheckedSessions,
-        SessionKeys & Dimensions & {
-            "No of Patients", "Patients Excluded - Missing Times", "Source Files",
-            "Procedure Rows", "Missing Patient IDs", "Rota Session Count"
-        }
-    ),
-    SessionRenamed = Table.RenameColumns(SessionBase, {{"No of Patients", "Patients in Session"}}),
-    SessionRecordType = Table.AddColumn(SessionRenamed, "Record Type", each "No. of sessions", type text),
-    SessionCount = Table.AddColumn(SessionRecordType, "Count", each 1, Int64.Type),
-    NullPatientFields = {
-        "Patient CSN", "Log IDs", "Primary Procedures", "Other Procedures",
-        "Procedure Specialty", "Responsible Consultants",
-        "First Procedure Start", "Last Procedure End"
-    },
-    SessionRows = List.Accumulate(
-        NullPatientFields,
-        SessionCount,
-        (State, Name) => Table.AddColumn(State, Name, each null)
-    ),
-    Combined = Table.Combine({SessionRows, PatientRows}),
-    Ordered = Table.ReorderColumns(Combined, {
-        "Hospital", "Theatre Type", "Operating Theatre", "Session Duration",
-        "Month", "Financial Year", "Service Area", "Session Specialty",
-        "Record Type", "Count", "Rota Session Count", "Location", "Procedure Date",
-        "Slot Start Time", "Slot End Time", "Patient CSN", "Log IDs",
-        "Primary Procedures", "Other Procedures", "Procedure Specialty",
-        "Responsible Consultants", "First Procedure Start", "Last Procedure End",
-        "Patients in Session", "Missing Patient IDs", "Procedure Rows", "Source Files",
-        "Mixed Session Specialty", "Patients Excluded - Missing Times"
-    }),
-    Typed = Table.TransformColumnTypes(Ordered, {
-        {"Hospital", type text},
-        {"Theatre Type", type text},
-        {"Operating Theatre", type text},
-        {"Session Duration", Int64.Type},
-        {"Month", type date},
-        {"Financial Year", type text},
-        {"Service Area", type text},
-        {"Session Specialty", type text},
-        {"Record Type", type text},
-        {"Count", Int64.Type},
-        {"Rota Session Count", Int64.Type},
-        {"Location", type text},
-        {"Procedure Date", type date},
-        {"Slot Start Time", type datetime},
-        {"Slot End Time", type datetime},
-        {"Patient CSN", type nullable text},
-        {"Log IDs", type nullable text},
-        {"Primary Procedures", type nullable text},
-        {"Other Procedures", type nullable text},
-        {"Procedure Specialty", type nullable text},
-        {"Responsible Consultants", type nullable text},
-        {"First Procedure Start", type nullable datetime},
-        {"Last Procedure End", type nullable datetime},
-        {"Patients in Session", Int64.Type},
-        {"Missing Patient IDs", Int64.Type},
-        {"Procedure Rows", Int64.Type},
-        {"Source Files", type nullable text},
-        {"Mixed Session Specialty", type logical},
-        {"Patients Excluded - Missing Times", Int64.Type}
-    }),
-    Sorted = Table.Sort(Typed, {
-        {"Hospital", Order.Ascending},
-        {"Theatre Type", Order.Ascending},
-        {"Operating Theatre", Order.Ascending},
-        {"Session Duration", Order.Ascending},
-        {"Month", Order.Ascending},
-        {"Slot Start Time", Order.Ascending},
-        {"Record Type", Order.Descending},
-        {"Patient CSN", Order.Ascending}
-    })
+            [No of Sessions] * (if IsNineToFive or IsMidnightToMidnight then 2 else 1),
+        Int64.Type),
+    Ordered = Table.ReorderColumns(WithRotaCount, {"Hospital", "Theatre Type", "Operating Theatre", "Session Duration", "Month", "Financial Year", "Service Area", "Session Specialty", "No of Sessions", "Rota Session Count", "No of Patients", "Location", "Procedure Date", "Slot Start Time", "Slot End Time", "Source Files", "Procedure Rows", "Missing Patient IDs", "Mixed Session Specialty"}),
+    CountTypes = Table.TransformColumnTypes(Ordered, {{"No of Patients", Int64.Type}, {"Patients Excluded - Missing Times", Int64.Type}}),
+    Sorted = Table.Sort(CountTypes, {{"Hospital", Order.Ascending}, {"Theatre Type", Order.Ascending}, {"Operating Theatre", Order.Ascending}, {"Session Duration", Order.Ascending}, {"Month", Order.Ascending}, {"Slot Start Time", Order.Ascending}})
 in
     Sorted
