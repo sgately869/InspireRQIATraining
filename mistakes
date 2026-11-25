@@ -1,8 +1,39 @@
-SWITCH (
+Site Utilisation Value =
+VAR Metric = SELECTEDVALUE ( 'Site Metrics'[Metric] )
+VAR Numerator = SUM ( 'SiteDrilldownData'[Report Numerator] )
+VAR Denominator = SUM ( 'SiteDrilldownData'[Report Denominator] )
+VAR Available = SUM ( 'SiteDrilldownData'[Report Available] )
+VAR SessionRows =
+    CALCULATE (
+        COUNTROWS ( 'SiteDrilldownData' ),
+        REMOVEFILTERS ( 'Site Metrics' ),
+        'SiteDrilldownData'[Site Metric] = "No. of Sessions"
+    )
+VAR RotaSessions =
+    IF (
+        Metric = "No. of Rota Sessions",
+        VAR SessionIDs =
+            CALCULATETABLE (
+                VALUES ( 'SiteDrilldownData'[Source Session ID] ),
+                REMOVEFILTERS ( 'Site Metrics' ),
+                'SiteDrilldownData'[Site Metric] = "No. of Sessions"
+            )
+        RETURN
+            CALCULATE (
+                SUM ( 'OverviewSessions'[Rota Session Count] ),
+                REMOVEFILTERS ( 'Site Metrics' ),
+                KEEPFILTERS (
+                    TREATAS ( SessionIDs, 'OverviewSessions'[Source Session ID] )
+                )
+            )
+    )
+RETURN
+    SWITCH (
         TRUE (),
         ISBLANK ( Metric ), BLANK (),
+        Metric = "No. of Rota Sessions", RotaSessions,
         Metric = "No. of Patients",
-            IF ( SessionRows > 0, COALESCE (Numerator, 0 ) ),
+            IF ( SessionRows > 0, COALESCE ( Numerator, 0 ) ),
         Available <= 0, BLANK (),
         Metric IN { "% Run Time", "% Op Time" },
             DIVIDE ( Numerator, Denominator ),
