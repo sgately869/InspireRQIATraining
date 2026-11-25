@@ -1,0 +1,387 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Planned slots, actual run spans and occupied intervals. Hover over any bar for the consultant, session specialty and timing classifications.",
+  "data": {
+    "name": "dataset"
+  },
+  "width": "container",
+  "height": {
+    "step": 46
+  },
+  "autosize": {
+    "type": "fit-x",
+    "contains": "padding"
+  },
+  "padding": {
+    "left": 5,
+    "right": 15,
+    "top": 8,
+    "bottom": 5
+  },
+  "title": {
+    "text": "Session timeline",
+    "subtitle": [
+      "Grey: planned slot   /   Blue: actual run   /   Orange: occupied theatre time",
+      "Hover over a bar for session details and timing classifications."
+    ],
+    "anchor": "start",
+    "fontSize": 17,
+    "subtitleFontSize": 11,
+    "subtitlePadding": 7
+  },
+  "transform": [
+    {
+      "filter": "isValid(datum['Start Minute']) && isValid(datum['End Minute']) && datum['End Minute'] >= datum['Start Minute']"
+    },
+    {
+      "calculate": "split(datum['Session Row'], '¦')[0]",
+      "as": "Session label"
+    },
+    {
+      "calculate": "datum['End Minute'] - datum['Start Minute']",
+      "as": "Interval minutes"
+    },
+    {
+      "calculate": "timeFormat(datetime(2000, 0, 1, 0, 0, 0, round(datum['Start Minute'] * 60000)), '%H:%M:%S') + (floor(round(datum['Start Minute'] * 60000) / 86400000) == 0 ? '' : ' (' + format(floor(round(datum['Start Minute'] * 60000) / 86400000), '+d') + 'd)')",
+      "as": "Starts"
+    },
+    {
+      "calculate": "timeFormat(datetime(2000, 0, 1, 0, 0, 0, round(datum['End Minute'] * 60000)), '%H:%M:%S') + (floor(round(datum['End Minute'] * 60000) / 86400000) == 0 ? '' : ' (' + format(floor(round(datum['End Minute'] * 60000) / 86400000), '+d') + 'd)')",
+      "as": "Ends"
+    },
+    {
+      "calculate": "isValid(datum['Responsible Consultant']) && datum['Responsible Consultant'] != '' ? datum['Responsible Consultant'] : 'Unrecorded'",
+      "as": "Responsible Consultant display"
+    },
+    {
+      "calculate": "isValid(datum['Start Type']) && datum['Start Type'] != '' ? datum['Start Type'] : 'Unrecorded'",
+      "as": "Start Type display"
+    },
+    {
+      "calculate": "isValid(datum['Finish Type']) && datum['Finish Type'] != '' ? datum['Finish Type'] : 'Unrecorded'",
+      "as": "Finish Type display"
+    },
+    {
+      "calculate": "isValid(datum['Session Specialty']) && datum['Session Specialty'] != '' ? datum['Session Specialty'] : 'Unrecorded'",
+      "as": "Session Specialty display"
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "Session Row",
+      "type": "nominal",
+      "sort": "ascending",
+      "axis": {
+        "title": null,
+        "labelExpr": "split(datum.label, '¦')[0]",
+        "labelLimit": 360,
+        "labelFontSize": 11,
+        "labelPadding": 10,
+        "ticks": false,
+        "domain": false
+      },
+      "scale": {
+        "paddingInner": 0.25,
+        "paddingOuter": 0.3
+      }
+    },
+    "x": {
+      "field": "Start Minute",
+      "type": "quantitative",
+      "scale": {
+        "zero": false,
+        "nice": false
+      },
+      "axis": {
+        "title": "Time of day",
+        "orient": "top",
+        "values": {
+          "expr": "sequence(ceil(domain('x')[0] / timelineTickStep) * timelineTickStep, floor(domain('x')[1] / timelineTickStep) * timelineTickStep + 1, timelineTickStep)"
+        },
+        "labelExpr": "timeFormat(datetime(2000, 0, 1, 0, 0, 0, round(datum.value * 60000)), '%H:%M') + (floor(round(datum.value * 60000) / 86400000) == 0 ? '' : ' (' + format(floor(round(datum.value * 60000) / 86400000), '+d') + 'd)')",
+        "labelFontSize": 11,
+        "labelOverlap": "greedy",
+        "titlePadding": 12,
+        "grid": true,
+        "gridColor": "#E5E7EB",
+        "domainColor": "#9CA3AF"
+      }
+    },
+    "x2": {
+      "field": "End Minute"
+    },
+    "color": {
+      "field": "Band",
+      "type": "nominal",
+      "scale": {
+        "domain": [
+          "Planned session",
+          "Actual run",
+          "Occupied theatre time"
+        ],
+        "range": [
+          "#D1D5DB",
+          "#0072B2",
+          "#F4B183"
+        ]
+      },
+      "legend": null
+    },
+    "tooltip": [
+      {
+        "field": "Session label",
+        "type": "nominal",
+        "title": "Session"
+      },
+      {
+        "field": "Responsible Consultant display",
+        "type": "nominal",
+        "title": "Consultant"
+      },
+      {
+        "field": "Session Specialty display",
+        "type": "nominal",
+        "title": "Session Specialty"
+      },
+      {
+        "field": "Band",
+        "type": "nominal",
+        "title": "Interval"
+      },
+      {
+        "field": "Starts",
+        "type": "nominal",
+        "title": "Start"
+      },
+      {
+        "field": "Ends",
+        "type": "nominal",
+        "title": "End"
+      },
+      {
+        "field": "Interval minutes",
+        "type": "quantitative",
+        "format": ".2f",
+        "title": "This interval (mins)"
+      },
+      {
+        "field": "Start Type display",
+        "type": "nominal",
+        "title": "Start type"
+      },
+      {
+        "field": "Finish Type display",
+        "type": "nominal",
+        "title": "Finish type"
+      }
+    ]
+  },
+  "layer": [
+    {
+      "transform": [
+        {
+          "filter": "datum.Band == 'Planned session'"
+        }
+      ],
+      "mark": {
+        "type": "bar",
+        "size": 34,
+        "opacity": 1
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.Band == 'Actual run'"
+        }
+      ],
+      "mark": {
+        "type": "bar",
+        "size": 20,
+        "opacity": 1
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum['Start Minute'] == datum['End Minute'] && datum.Band == 'Actual run'"
+        }
+      ],
+      "mark": {
+        "type": "tick",
+        "orient": "vertical",
+        "size": 20,
+        "thickness": 1
+      },
+      "encoding": {
+        "x2": null
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.Band == 'Occupied theatre time'"
+        }
+      ],
+      "mark": {
+        "type": "bar",
+        "size": 8,
+        "opacity": 1
+      },
+      "encoding": {
+        "tooltip": [
+          {
+            "field": "Session label",
+            "type": "nominal",
+            "title": "Session"
+          },
+          {
+            "field": "Responsible Consultant display",
+            "type": "nominal",
+            "title": "Consultant"
+          },
+          {
+            "field": "Session Specialty display",
+            "type": "nominal",
+            "title": "Session Specialty"
+          },
+          {
+            "field": "Band",
+            "type": "nominal",
+            "title": "Interval"
+          },
+          {
+            "field": "Starts",
+            "type": "nominal",
+            "title": "Start"
+          },
+          {
+            "field": "Ends",
+            "type": "nominal",
+            "title": "End"
+          },
+          {
+            "field": "Interval minutes",
+            "type": "quantitative",
+            "format": ".2f",
+            "title": "This interval (mins)"
+          },
+          {
+            "field": "Start Type display",
+            "type": "nominal",
+            "title": "Start type"
+          },
+          {
+            "field": "Finish Type display",
+            "type": "nominal",
+            "title": "Finish type"
+          },
+          {
+            "field": "Primary Procedure",
+            "type": "nominal",
+            "title": "Primary Procedure"
+          },
+          {
+            "field": "Other Procedures",
+            "type": "nominal",
+            "title": "Other Procedures"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum['Start Minute'] == datum['End Minute'] && datum.Band == 'Occupied theatre time'"
+        }
+      ],
+      "mark": {
+        "type": "tick",
+        "orient": "vertical",
+        "size": 10,
+        "thickness": 1
+      },
+      "encoding": {
+        "x2": null,
+        "tooltip": [
+          {
+            "field": "Session label",
+            "type": "nominal",
+            "title": "Session"
+          },
+          {
+            "field": "Responsible Consultant display",
+            "type": "nominal",
+            "title": "Consultant"
+          },
+          {
+            "field": "Session Specialty display",
+            "type": "nominal",
+            "title": "Session Specialty"
+          },
+          {
+            "field": "Band",
+            "type": "nominal",
+            "title": "Interval"
+          },
+          {
+            "field": "Starts",
+            "type": "nominal",
+            "title": "Start"
+          },
+          {
+            "field": "Ends",
+            "type": "nominal",
+            "title": "End"
+          },
+          {
+            "field": "Interval minutes",
+            "type": "quantitative",
+            "format": ".2f",
+            "title": "This interval (mins)"
+          },
+          {
+            "field": "Start Type display",
+            "type": "nominal",
+            "title": "Start type"
+          },
+          {
+            "field": "Finish Type display",
+            "type": "nominal",
+            "title": "Finish type"
+          },
+          {
+            "field": "Primary Procedure",
+            "type": "nominal",
+            "title": "Primary Procedure"
+          },
+          {
+            "field": "Other Procedures",
+            "type": "nominal",
+            "title": "Other Procedures"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "font": "Segoe UI",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelColor": "#374151",
+      "titleColor": "#374151"
+    },
+    "title": {
+      "color": "#163C2A",
+      "subtitleColor": "#4B5563"
+    }
+  },
+  "params": [
+    {
+      "name": "timelineTickStep",
+      "expr": "domain('x')[1] - domain('x')[0] > 480 ? 120 : domain('x')[1] - domain('x')[0] > 240 ? 60 : domain('x')[1] - domain('x')[0] > 90 ? 30 : domain('x')[1] - domain('x')[0] > 30 ? 15 : domain('x')[1] - domain('x')[0] > 5 ? 5 : 1"
+    }
+  ]
+}

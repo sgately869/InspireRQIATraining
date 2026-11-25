@@ -1,0 +1,42 @@
+TimelineIntervals =
+VAR Planned =
+    SELECTCOLUMNS (
+        'SessionReview',
+        "Timeline Session ID", 'SessionReview'[Source Session ID],
+        "Interval ID", "Plan|" & 'SessionReview'[Source Session ID],
+        "Band", "Planned session",
+        "Interval Start", 'SessionReview'[Slot Start Time],
+        "Interval End", 'SessionReview'[Slot End Time],
+        "Primary Procedure", BLANK (),
+        "Other Procedures", BLANK ()
+    )
+VAR RecordedRuns =
+    SELECTCOLUMNS (
+        FILTER (
+            'SessionReview',
+            NOT ISBLANK ( 'SessionReview'[Run Minutes] )
+                && NOT ISBLANK ( 'SessionReview'[First Actual Start] )
+                && NOT ISBLANK ( 'SessionReview'[Last Actual End] )
+                && 'SessionReview'[Last Actual End] >= 'SessionReview'[First Actual Start]
+        ),
+        "Timeline Session ID", 'SessionReview'[Source Session ID],
+        "Interval ID", "Run|" & 'SessionReview'[Source Session ID],
+        "Band", "Actual run",
+        "Interval Start", 'SessionReview'[First Actual Start],
+        "Interval End", 'SessionReview'[Last Actual End],
+        "Primary Procedure", BLANK (),
+        "Other Procedures", BLANK ()
+    )
+VAR Occupied =
+    SELECTCOLUMNS (
+        FILTER ( 'TimelineChartData', 'TimelineChartData'[Record Type] = "Operation" ),
+        "Timeline Session ID", 'TimelineChartData'[Timeline Session ID],
+        "Interval ID", 'TimelineChartData'[Interval ID],
+        "Band", "Occupied theatre time",
+        "Interval Start", 'TimelineChartData'[Interval Start],
+        "Interval End", 'TimelineChartData'[Interval End],
+        "Primary Procedure", 'TimelineChartData'[Primary Procedure],
+        "Other Procedures", 'TimelineChartData'[Other Procedures]
+    )
+RETURN
+    UNION ( Planned, RecordedRuns, Occupied )
