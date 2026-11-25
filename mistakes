@@ -1,0 +1,10 @@
+SWITCH (
+        TRUE (),
+        ISBLANK ( Metric ), BLANK (),
+        Metric = "No. of Patients",
+            IF ( SessionRows > 0, COALESCE (Numerator, 0 ) ),
+        Available <= 0, BLANK (),
+        Metric IN { "% Run Time", "% Op Time" },
+            DIVIDE ( Numerator, Denominator ),
+        Numerator
+    )
