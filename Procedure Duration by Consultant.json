@@ -1,0 +1,242 @@
+{
+  "description": "Actual recorded duration by responsible consultant, with case counts, interquartile ranges and a selected-procedure reference.",
+  "data": {
+    "name": "dataset"
+  },
+  "width": "container",
+  "height": {
+    "step": 27
+  },
+  "autosize": {
+    "type": "fit-x",
+    "contains": "padding"
+  },
+  "padding": {
+    "left": 4,
+    "right": 12,
+    "top": 12,
+    "bottom": 4
+  },
+  "transform": [
+    {
+      "filter": "isValid(datum['Selected Actual Minutes']) && datum['Procedure Case Count'] > 0"
+    },
+    {
+      "calculate": "datum['Responsible Consultant'] + '  (n=' + format(datum['Procedure Case Count'], ',d') + ')'",
+      "as": "Consultant Label"
+    }
+  ],
+  "layer": [
+    {
+      "transform": [
+        {
+          "aggregate": [
+            {
+              "op": "max",
+              "field": "Procedure Reference Minutes",
+              "as": "Reference"
+            }
+          ]
+        },
+        {
+          "filter": "isValid(datum.Reference)"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "color": "#677385",
+        "strokeDash": [
+          5,
+          4
+        ],
+        "strokeWidth": 1.5
+      },
+      "encoding": {
+        "x": {
+          "field": "Reference",
+          "type": "quantitative",
+          "title": "Actual minutes",
+          "scale": {
+            "zero": true
+          },
+          "axis": {
+            "format": ",.0f",
+            "tickMinStep": 1
+          }
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "rule",
+        "color": "#9DBED0",
+        "strokeWidth": 5,
+        "strokeCap": "round"
+      },
+      "encoding": {
+        "x": {
+          "field": "P25 Actual Minutes",
+          "type": "quantitative",
+          "title": "Actual minutes",
+          "scale": {
+            "zero": true
+          },
+          "axis": {
+            "format": ",.0f",
+            "tickMinStep": 1
+          }
+        },
+        "x2": {
+          "field": "P75 Actual Minutes"
+        },
+        "y": {
+          "field": "Consultant Label",
+          "type": "nominal",
+          "sort": {
+            "field": "Selected Actual Minutes",
+            "op": "max",
+            "order": "descending"
+          },
+          "axis": {
+            "title": null,
+            "labelLimit": 245,
+            "ticks": false,
+            "domain": false,
+            "labelPadding": 7
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Responsible Consultant",
+            "type": "nominal",
+            "title": "Responsible consultant"
+          },
+          {
+            "field": "Procedure Case Count",
+            "type": "quantitative",
+            "title": "Eligible cases",
+            "format": ",d"
+          },
+          {
+            "field": "Selected Actual Minutes",
+            "type": "quantitative",
+            "title": "Selected statistic (min)",
+            "format": ",.1f"
+          },
+          {
+            "field": "P25 Actual Minutes",
+            "type": "quantitative",
+            "title": "25th percentile (min)",
+            "format": ",.1f"
+          },
+          {
+            "field": "P75 Actual Minutes",
+            "type": "quantitative",
+            "title": "75th percentile (min)",
+            "format": ",.1f"
+          },
+          {
+            "field": "Procedure Reference Minutes",
+            "type": "quantitative",
+            "title": "Procedure reference (min)",
+            "format": ",.1f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "color": "#005F86",
+        "opacity": 1,
+        "size": 83,
+        "stroke": "#FFFFFF",
+        "strokeWidth": 1.2
+      },
+      "encoding": {
+        "x": {
+          "field": "Selected Actual Minutes",
+          "type": "quantitative",
+          "title": "Actual minutes",
+          "scale": {
+            "zero": true
+          },
+          "axis": {
+            "format": ",.0f",
+            "tickMinStep": 1
+          }
+        },
+        "y": {
+          "field": "Consultant Label",
+          "type": "nominal",
+          "sort": {
+            "field": "Selected Actual Minutes",
+            "op": "max",
+            "order": "descending"
+          },
+          "axis": {
+            "title": null,
+            "labelLimit": 245,
+            "ticks": false,
+            "domain": false,
+            "labelPadding": 7
+          }
+        },
+        "tooltip": [
+          {
+            "field": "Responsible Consultant",
+            "type": "nominal",
+            "title": "Responsible consultant"
+          },
+          {
+            "field": "Procedure Case Count",
+            "type": "quantitative",
+            "title": "Eligible cases",
+            "format": ",d"
+          },
+          {
+            "field": "Selected Actual Minutes",
+            "type": "quantitative",
+            "title": "Selected statistic (min)",
+            "format": ",.1f"
+          },
+          {
+            "field": "P25 Actual Minutes",
+            "type": "quantitative",
+            "title": "25th percentile (min)",
+            "format": ",.1f"
+          },
+          {
+            "field": "P75 Actual Minutes",
+            "type": "quantitative",
+            "title": "75th percentile (min)",
+            "format": ",.1f"
+          },
+          {
+            "field": "Procedure Reference Minutes",
+            "type": "quantitative",
+            "title": "Procedure reference (min)",
+            "format": ",.1f"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFont": "Segoe UI",
+      "titleFont": "Segoe UI",
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "labelColor": "#354056",
+      "titleColor": "#354056",
+      "gridColor": "#E7ECF0",
+      "domainColor": "#AEB8C2",
+      "tickColor": "#AEB8C2"
+    }
+  }
+}
